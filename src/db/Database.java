@@ -83,4 +83,9 @@ public class Database {
     public static ArrayList<Entity> getAll(int entityCode) {
         return new ArrayList<>(entities);
     }
+
+    public static void updateEntityList(ArrayList<Entity> updatedEntites){
+        entities.clear();
+        entities = updatedEntites;
+    }
 }
