@@ -16,7 +16,11 @@ public class StepService {
         step.setStatus(Step.Status.NotStarted);
         Database.add(step);
     }
+<<<<<<< Updated upstream
 
+=======
+    
+>>>>>>> Stashed changes
     public static void updateStepTitle(int stepId, String newTitle) throws InvalidEntityException {
         Step step = (Step) Database.get(stepId);
         step.title = newTitle;
