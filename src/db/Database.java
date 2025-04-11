@@ -79,4 +79,8 @@ public class Database {
             validator.validate(e);
         }
     }
+
+    public static ArrayList<Entity> getAll(int entityCode) {
+        return new ArrayList<>(entities);
+    }
 }
