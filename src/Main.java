@@ -29,7 +29,6 @@ public class Main {
 
         JPanel mainPanel = new JPanel(new GridLayout(3, 3, 10, 10));
 
-        // Create buttons
         JButton addTaskButton = new JButton("Add Task");
         JButton addStepButton = new JButton("Add Step");
         JButton deleteButton = new JButton("Delete");
@@ -40,7 +39,6 @@ public class Main {
         JButton getIncompleteTasksButton = new JButton("Get Incomplete-tasks");
         JButton exitButton = new JButton("Exit");
 
-        // Add buttons to panel
         mainPanel.add(addTaskButton);
         mainPanel.add(addStepButton);
         mainPanel.add(deleteButton);
