@@ -10,7 +10,7 @@ public class Step extends Entity {
 
     public enum Status{
         NotStarted,
-        Completed;
+        Completed, getStatus;
     }
 
     public Step (String title, int taskRef){

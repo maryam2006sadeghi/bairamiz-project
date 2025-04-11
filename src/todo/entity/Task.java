@@ -17,7 +17,7 @@ public class Task extends Entity implements Trackable {
     public enum Status{
         NotStarted,
         InProgress,
-        Completed;
+        Completed, getStatus;
     }
 
     public Task(String title, String description, Date dueDate) {
@@ -25,6 +25,7 @@ public class Task extends Entity implements Trackable {
         this.description = description;
         this.dueDate = dueDate;
         this.status = Status.NotStarted;
+        this.creationDate = new Date();
     }
 
     @Override
