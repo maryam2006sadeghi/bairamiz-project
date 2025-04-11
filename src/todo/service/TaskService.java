@@ -1,10 +1,15 @@
 package todo.service;
 
 import db.Database;
+import db.Entity;
 import db.exception.InvalidEntityException;
+import todo.entity.Step;
 import todo.entity.Task;
 
+import java.util.ArrayList;
 import java.util.Date;
+
+import static db.Database.getAll;
 
 public class TaskService {
     public static void addTask(String title, String description, Date dueDate) throws InvalidEntityException {
@@ -33,5 +38,23 @@ public class TaskService {
 
     public static void deleteTask(int taskId) {
         Database.delete(taskId);
+        int counter = 0 ;
+        ArrayList<Entity> copyEntities = new ArrayList<>(getAll(17));
+        for (Entity entity : copyEntities){
+            if (entity instanceof Step && ((Step) entity).getTaskRef() == taskId){
+                counter ++;
+            }
+        }
+
+        while (counter > 0){
+            for (Entity entity : copyEntities){
+                if (entity instanceof Step && ((Step) entity).getTaskRef() == taskId){
+                    copyEntities.remove(entity);
+                    break;
+                }
+            }
+            counter --;
+        }
+        Database.updateEntityList(copyEntities);
     }
 }
