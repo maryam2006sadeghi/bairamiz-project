@@ -67,9 +67,9 @@ public class Main {
     private static void addTask(JFrame frame) {
         JPanel panel = new JPanel(new GridLayout(3, 2, 10, 10));
 
-        JLabel titleLabel = new JLabel("Title:");
-        JLabel descriptionLabel = new JLabel("Description:");
-        JLabel dueDateLabel = new JLabel("Due Date (yyyy-mm-dd):");
+        JLabel titleLabel = new JLabel("Title: ");
+        JLabel descriptionLabel = new JLabel("Description: ");
+        JLabel dueDateLabel = new JLabel("Due Date: ");
 
         JTextField titleField = new JTextField();
         JTextField descriptionField = new JTextField();
@@ -92,19 +92,19 @@ public class Main {
                 String dueDateStr = dueDateField.getText().trim();
 
                 if (title.isEmpty()) {
-                    throw new IllegalArgumentException("Title cannot be empty");
+                    throw new IllegalArgumentException("Cannot save task.\nError : Task title cannot be empty");
                 }
 
                 LocalDate dueDate = LocalDate.parse(dueDateStr, DATE_FORMATTER);
                 Date sqlDate = java.sql.Date.valueOf(dueDate);
 
-                TaskService.addTask(title, description, sqlDate);
                 JOptionPane.showMessageDialog(frame, "Task saved successfully.\nID: " + TaskService.addTask(title, description, sqlDate), "Success", JOptionPane.INFORMATION_MESSAGE);
             }
             catch (DateTimeParseException e) {
-                JOptionPane.showMessageDialog(frame, "Invalid date format. Please use yyyy-MM-dd", "Error", JOptionPane.ERROR_MESSAGE);
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(frame, "Cannot save task.\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Cannot save task.\nError: Invalid date format. Please use yyyy-MM-dd", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            catch (Exception e){
+                JOptionPane.showMessageDialog(frame, "Cannot save task.\n", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -112,8 +112,8 @@ public class Main {
     private static void addStep(JFrame frame) {
         JPanel panel = new JPanel(new GridLayout(2, 2, 10, 10));
 
-        JLabel taskRefLabel = new JLabel("Task ID:");
-        JLabel titleLabel = new JLabel("Title:");
+        JLabel taskRefLabel = new JLabel("Task ID: ");
+        JLabel titleLabel = new JLabel("Title: ");
 
         JTextField taskRefField = new JTextField();
         JTextField titleField = new JTextField();
@@ -126,21 +126,20 @@ public class Main {
         int result = JOptionPane.showConfirmDialog(frame, panel, "Add Step",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
+        int taskRef = Integer.parseInt(taskRefField.getText().trim());
+        String title = titleField.getText().trim();
+
         if (result == JOptionPane.OK_OPTION) {
             try {
-                int taskRef = Integer.parseInt(taskRefField.getText().trim());
-                String title = titleField.getText().trim();
-
                 if (title.isEmpty()) {
-                    throw new IllegalArgumentException("Title cannot be empty");
+                    throw new IllegalArgumentException("Cannot save step\nTitle cannot be empty");
                 }
 
-                StepService.saveStep(title, taskRef);
                 JOptionPane.showMessageDialog(frame, "Step saved successfully.\nID: " + StepService.saveStep(title, taskRef), "Success", JOptionPane.INFORMATION_MESSAGE);
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(frame, "Invalid Task ID. Please enter a number", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Cannot save step\nInvalid Task ID. Please enter a number", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(frame, "Cannot save step.\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Cannot save step\nError : Cannot find task with ID=" + taskRef , "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -156,12 +155,10 @@ public class Main {
 
         int result = JOptionPane.showConfirmDialog(frame, panel, "Delete",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
+        int id = Integer.parseInt(idField.getText().trim());
+        Entity entity = Database.get(id);
         if (result == JOptionPane.OK_OPTION) {
             try {
-                int id = Integer.parseInt(idField.getText().trim());
-                Entity entity = Database.get(id);
-
                 if (entity instanceof Task) {
                     TaskService.deleteTask(id);
                 } else if (entity instanceof Step) {
@@ -174,7 +171,7 @@ public class Main {
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(frame, "Invalid ID. Please enter a number", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(frame, "Cannot delete entity.\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Cannot delete entity with ID=.\n"+ id +"Error: Something happend","Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -206,11 +203,6 @@ public class Main {
                 String field = fieldField.getText().trim().toLowerCase();
                 String newValue = newValueField.getText().trim();
 
-                Task task = (Task) Database.get(id);
-                if (task == null) {
-                    throw new IllegalArgumentException("Task not found");
-                }
-
                 switch (field) {
                     case "title":
                         TaskService.updateTaskTitle(id, newValue);
@@ -229,7 +221,10 @@ public class Main {
                         throw new IllegalArgumentException("Invalid field");
                 }
 
-                JOptionPane.showMessageDialog(frame, "Task updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Successfully updated the task.\n" +
+                        "Field: " + field +
+                        "\nNew Value: " + newValue +
+                        "\nModification Date: " + new Date(), "Success", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(frame, "Cannot update task.\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
@@ -257,17 +252,12 @@ public class Main {
         int result = JOptionPane.showConfirmDialog(frame, panel, "Update Step",
                 JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
+        int id = Integer.parseInt(idField.getText().trim());
+        String field = fieldField.getText().trim().toLowerCase();
+        String newValue = newValueField.getText().trim();
+
         if (result == JOptionPane.OK_OPTION) {
             try {
-                int id = Integer.parseInt(idField.getText().trim());
-                String field = fieldField.getText().trim().toLowerCase();
-                String newValue = newValueField.getText().trim();
-
-                Step step = (Step) Database.get(id);
-                if (step == null) {
-                    throw new IllegalArgumentException("Step not found");
-                }
-
                 switch (field) {
                     case "title":
                         StepService.updateStepTitle(id, newValue);
@@ -279,9 +269,13 @@ public class Main {
                         throw new IllegalArgumentException("Invalid field");
                 }
 
-                JOptionPane.showMessageDialog(frame, "Step updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Successfully updated the step.\n" +
+                        "Field: " + field +
+                        "\nNew Value: " + newValue +
+                        "\nModification Date: " + new Date() , "Success", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e) {
-                JOptionPane.showMessageDialog(frame,"Cannot update step.\nError: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame,"Cannot update step with ID=." + id +"\n" +
+                        "Error: Cannot find entity with ID=" + id  , "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
